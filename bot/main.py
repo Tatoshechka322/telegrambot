@@ -1,33 +1,33 @@
 import logging
 import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InputFile
-from aiogram.utils import executor
 
-from config import TOKEN  # Импортируем токен из config.py
+from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand
+from config import TOKEN
+from handlers import router  # Импортируем роутер из handlers.py
 
-# Инициализация бота и диспетчера
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
-
-# Включаем логирование
+# Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
 
-# Словарь для отслеживания брони
-booked_tables = {}
+# Объект бота
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
 
-# Импорт кнопок
-from keyboards import menu_keyboard
 
-# Приветствие
-@dp.message_handler(commands=['start'])
-async def start(message: types.Message):
-    await message.answer(
-        "Приветствуем, дорогой гость! Что бы ты хотел сделать?", 
-        reply_markup=menu_keyboard
-    )
+async def set_commands(bot: Bot):
+    commands = [
+        BotCommand(command="/start", description="Начать работу с ботом")
+    ]
+    await bot.set_my_commands(commands)
 
-# Запуск бота
-if name == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+
+async def main():
+    print("Бот запущен...")
+    await set_commands(bot)
+    dp.include_router(router)  # Подключаем обработчики из handlers.py
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
 
